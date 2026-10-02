@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Delta State University, Abraka — CES 211 CBT</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f6f8;color:#18202a}header{background:#173b6c;color:white;padding:18px 16px;text-align:center}
+.logo{width:86px;height:86px;object-fit:contain;background:white;border-radius:50%;padding:3px;margin:0 auto 8px;display:block}
+.uni-title{font-size:21px;font-weight:800;letter-spacing:.3px}
+.exam-title{font-size:15px;font-weight:700;margin-top:5px}
+.exam-subtitle{font-size:13px;margin-top:4px;opacity:.95}.wrap{max-width:1000px;margin:auto;padding:16px}.card{background:white;border-radius:12px;padding:20px;box-shadow:0 3px 12px #0001;margin-bottom:16px}input{width:100%;padding:13px;margin:7px 0;border:1px solid #cbd3dc;border-radius:8px;font-size:16px}button{border:0;border-radius:8px;padding:12px 18px;font-weight:700;cursor:pointer}.primary{background:#173b6c;color:white}.danger{background:#b42318;color:white}.muted{background:#e8edf3}.hidden{display:none}.timer{font-size:24px;font-weight:800;text-align:center;padding:10px;position:sticky;top:0;background:white;z-index:5;border-radius:8px}.warn{color:#b42318}.qhead{font-weight:700;font-size:18px;line-height:1.45}.option{display:block;padding:12px;margin:9px 0;border:1px solid #d8dee6;border-radius:9px;cursor:pointer}.option input{width:auto;margin-right:8px}.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}.grid button{padding:8px 0;background:#e7ecf2}.grid button.done{background:#b7d7ff}.nav{display:flex;gap:10px;justify-content:space-between;margin-top:16px}.small{font-size:13px;color:#5e6975}.result{font-size:24px;font-weight:800;text-align:center}.review-item{border-top:1px solid #ddd;padding:12px 0}.correct{color:#137333}.wrong{color:#b42318}@media(max-width:600px){.grid{grid-template-columns:repeat(5,1fr)}}
+</style>
+</head>
+<body>
+<header>
+<img class="logo" src="https://portal.delsuces.online/img/delsulogo.jpg" alt="Delta State University Logo" onerror="this.style.display='none'">
+<div class="uni-title">DELTA STATE UNIVERSITY, ABRAKA</div>
+<div class="exam-title">COMPUTER BASED TEST (CBT)</div>
+<div class="exam-subtitle">CES 211 — ENTREPRENEURSHIP AND INNOVATION</div>
+</header>
+<div class="wrap">
+<section id="login" class="card">
+<h3>CBT Credential Access</h3>
+<p class="small">Enter your matriculation number and password.</p>
+<label>Matric Number</label><input id="mat" placeholder="Example: FMS/WK/23/24/715116">
+<label>Password</label><input id="pw" type="password" placeholder="Enter password">
+<button class="primary" onclick="login()">ACCESS CBT</button>
+<p id="loginMsg" class="small"></p>
+</section>
+
+<section id="instructions" class="card hidden">
+<h3>EXAMINATION INSTRUCTIONS</h3>
+<p>You are required to read and comply with the following instructions before commencing this examination:</p>
+<ol>
+<li>This examination consists of <b>50 objective questions</b> covering all course modules.</li>
+<li>The time allowed for the examination is <b>25 minutes</b>.</li>
+<li>Each question has four options: <b>A, B, C and D</b>. Select the option that you consider correct.</li>
+<li>Answer <b>all questions</b>. You may move between questions using the <b>PREVIOUS</b>, <b>NEXT</b> and question-number buttons.</li>
+<li>Your answers are recorded as you make your selections. You may change an answer before submitting the examination.</li>
+<li>Keep track of the time displayed at the top of the examination screen. The examination will be <b>automatically submitted when the time expires</b>.</li>
+<li>Do not refresh the page or close the examination window while the examination is in progress, as this may affect your attempt.</li>
+<li>When you have completed the examination, click <b>SUBMIT EXAM</b>. Do not submit until you are satisfied with your answers.</li>
+<li>Any form of examination malpractice is prohibited.</li>
+</ol>
+<p><b>Candidate:</b> <span id="candidate"></span></p>
+<button class="primary" onclick="startExam()">START EXAMINATION</button>
+</section>
+
+<section id="exam" class="hidden">
+<div class="timer" id="timer">25:00</div>
+<div class="card">
+<div id="question"></div>
+<div class="nav"><button class="muted" onclick="prevQ()">PREVIOUS</button><button class="primary" onclick="nextQ()">NEXT</button></div>
+</div>
+<div class="card">
+<b>QUESTION GRID</b>
+<div class="grid" id="grid"></div>
+<div style="margin-top:14px;text-align:center"><button class="danger" onclick="submitExam(false)">SUBMIT EXAM</button></div>
+</div>
+</section>
+
+<section id="result" class="card hidden">
+<h3>EXAM RESULT</h3>
+<div class="result" id="score"></div>
+<p id="stats" style="text-align:center"></p>
+<div id="review"></div>
+<button class="primary" onclick="location.reload()">RETURN TO LOGIN</button>
+</section>
+</div>
+
+<script>
+const questions=[
+{"ch": 1, "q": "The term entrepreneurship is historically derived from which French verb meaning to undertake, seize, or pledge?", "o": ["Enterprise", "Entreprendre", "Entrepose", "Entrepreneurial"], "a": 1},
+{"ch": 6, "q": "In double-entry bookkeeping, if a firm purchases raw materials for cash, the proper recording procedure requires:", "o": ["Crediting both cash and inventory accounts simultaneously", "Debiting the inventory account and crediting the cash account", "Debiting the cash account and crediting the accounts payable ledger", "Recording the transaction strictly as a memorandum ledger entry without dual posting"], "a": 1},
+{"ch": 1, "q": "Which of the following describes a situation where an individual initiates a business venture because conventional employment or wage-earning options are completely unavailable?", "o": ["Opportunity-driven entrepreneurship", "Corporate intrapreneurship", "Necessity-based entrepreneurship", "Social impact entrepreneurship"], "a": 2},
+{"ch": 4, "q": "Which institutional body in Nigeria is specifically charged with the statutory mandate of promoting, coordinating, and developing non-oil export trade?", "o": ["Nigerian Investment Promotion Commission (NIPC)", "Raw Materials Research and Development Council (RMRDC)", "Nigerian Export Promotion Council (NEPC)", "Federal Institute of Industrial Research, Oshodi (FIIRO)"], "a": 2},
+{"ch": 9, "q": "Which e-commerce category specifically characterizes online commercial transactions conducted directly from a commercial enterprise to individual final users?", "o": ["Business-to-Consumer (B2C)", "Business-to-Business (B2B)", "Consumer-to-Consumer (C2C)", "Business-to-Government (B2G)"], "a": 0},
+{"ch": 2, "q": "The Austrian Market Process perspective views entrepreneurial opportunities as emerging primarily through:", "o": ["Rigid government fiscal schedules and administrative price controls", "Market disequilibrium, subjective perception, and competitive discovery", "Uniform corporate promotion systems and bureaucratic hierarchy", "Standardized retrospective accounting procedures alone"], "a": 1},
+{"ch": 3, "q": "An innovation that introduces a major technological paradigm shift, entirely altering industry structures rather than providing a minor procedural upgrade, is classified as:", "o": ["Incremental innovation", "Administrative process modification", "Radical innovation", "Routine architectural tweaking"], "a": 2},
+{"ch": 4, "q": "Which federal research body holds the primary mandate of conducting industrial research, upgrading local raw materials, and scaling up pilot production plants for Nigerian enterprises?", "o": ["Central Bank of Nigeria Development Division", "Federal Institute of Industrial Research, Oshodi (FIIRO)", "Nigerian Export Processing Zones Authority (NEPZA)", "Manufacturers Association of Nigeria (MAN) Council"], "a": 1},
+{"ch": 6, "q": "Which primary financial statement displays an enterprise's structural financial health—detailing total assets, liabilities, and owners' equity—at a specific point in time?", "o": ["Statement of Comprehensive Income (Profit and Loss)", "Statement of Cash Flows from Operations", "Petty Cash Imprest Control Register", "Statement of Financial Position (Balance Sheet)"], "a": 3},
+{"ch": 7, "q": "A negotiation dynamic where both parties work collaboratively to analyze underlying interests, expand total available resources, and secure mutual gains is known as:", "o": ["Distributive bargaining", "Integrative bargaining", "Positional zero-sum negotiation", "Autocratic concession-making"], "a": 1},
+{"ch": 1, "q": "An entrepreneur who exhibits a strong internal locus of control fundamentally believes that:", "o": ["Venture performance and eventual outcomes depend directly on their own personal behavior and effort", "Long-term commercial success is determined entirely by external market luck and macro timing", "Government regulatory policies dictate all operational profits and losses", "External economic shocks completely override any strategic managerial decision"], "a": 0},
+{"ch": 3, "q": "Which cognitive reflective process requires an entrepreneur to deliberately analyze a past operational failure or decision to extract conceptual lessons for future governance?", "o": ["Mechanical algorithmic thinking", "Repetitive operational routine", "Reflective thinking", "Passive administrative observation"], "a": 2},
+{"ch": 4, "q": "Which federal agency is specifically empowered with attracting, promoting, and coordinating both foreign and domestic capital investments into the Nigerian economy?", "o": ["National Office for Technology Acquisition and Promotion (NOTAP)", "Nigerian Investment Promotion Commission (NIPC)", "Raw Materials Research and Development Council (RMRDC)", "Nigerian Export Promotion Council (NEPC)"], "a": 1},
+{"ch": 5, "q": "Which evaluative activity is most appropriate when assessing whether a proposed business concept is technically and economically viable before committing major capital?", "o": ["Full commercial feasibility study", "Routine employee payroll processing", "Corporate office interior decoration", "Daily warehouse stock verification audit"], "a": 0},
+{"ch": 6, "q": "Staffing as a fundamental management function involves the continuous process of:", "o": ["Recording routine cash disbursements in the general ledger", "Calculating gross national income and sector productivity indices", "Recruiting, selecting, and placing suitable personnel into appropriate organizational roles", "Designing promotional packaging for retail commodities"], "a": 2},
+{"ch": 1, "q": "David McClelland's behavioral motivation theory emphasizes that high-performing entrepreneurs are primarily driven by:", "o": ["The need for absolute social conformity and peer group acceptance", "The need for achievement (nAch), excellence, and mastering difficult challenges", "The continuous fear of aggressive financial market competition", "The complete avoidance of personal accountability and risk-bearing"], "a": 1},
+{"ch": 3, "q": "Creative thinking is most critically required when an enterprise manager needs to:", "o": ["Follow a single rigid operating formula without procedural deviation", "Generate alternative strategic ideas and fresh problem-solving possibilities", "Prevent all forms of product experimentation to reduce overhead costs", "Archive historical accounting data into digital ledgers"], "a": 1},
+{"ch": 4, "q": "Cultural entrepreneurship is concerned with entrepreneurial ventures whose primary economic model is deeply connected with:", "o": ["Strict government tax compliance auditing procedures", "The total systemic elimination of ancestral community customs", "Heavy industrial manufacturing of synthetic petrochemicals", "Cultural products, values, heritage, and creative expressions"], "a": 3},
+{"ch": 5, "q": "Which financial forecast is specifically designed to estimate expected future cash inflows and outflow timing to prevent liquidity crises?", "o": ["Sales revenue forecast", "Cash flow projection", "Corporate tax liability forecast", "Direct labor cost budget"], "a": 1},
+{"ch": 6, "q": "Which of the following is a widely utilized group technique designed to generate a high volume of uninhibited creative ideas before critical evaluation?", "o": ["Fixed asset depreciation scheduling", "Forensic financial auditing", "Brainstorming session", "Periodic bank reconciliation"], "a": 2},
+{"ch": 2, "q": "Which theoretical school of thought emphasizes that venture creation is heavily shaped by community cultural values, traditions, and shared belief systems?", "o": ["The Anthropological framework", "Strict macroeconomic monetary theory", "Neoclassical micro-accounting theory", "Statutory corporate tax legislation"], "a": 0},
+{"ch": 2, "q": "Which category of economic capital refers most directly to the practical knowledge, specialized education, skill sets, and experience possessed by individuals?", "o": ["Fixed physical capital", "Human capital", "Liquid financial capital", "Embedded social capital"], "a": 1},
+{"ch": 2, "q": "Peter Drucker's conceptual contribution to entrepreneurship emphasizes that systematic entrepreneurs should actively:", "o": ["Search systematically for purposeful innovation opportunities", "Avoid all dynamic environmental market shifts to maintain status quo stability", "Eliminate innovation entirely to reduce operational turbulence", "Depend exclusively on inherited family capital assets"], "a": 0},
+{"ch": 3, "q": "Which activity best illustrates incremental innovation within an established commercial enterprise?", "o": ["Stripping out all functional utilities to launch a totally unproven product line", "Making continuous minor performance upgrades and refinements to an existing product line", "Radical change that completely alters the technological paradigm of the industry", "Abandoning the current target market overnight to pursue speculative ventures"], "a": 1},
+{"ch": 5, "q": "A business plan is best understood in strategic management as a document that:", "o": ["Completely eliminates the necessity for primary market research", "Serves as a dynamic operating roadmap for the venture that adapts as conditions evolve", "Is legally required to be prepared only after corporate liquidation", "Guarantees 100% immunity against financial loss in competitive markets"], "a": 1},
+{"ch": 6, "q": "A visual diagramming technique that positions a central core concept in the middle and radiates out related sub-ideas is known as:", "o": ["Hierarchical staffing analysis", "Mind mapping", "Adversarial negotiation structuring", "Sequential cash flow charting"], "a": 1},
+{"ch": 6, "q": "A corporate leader who dynamically modifies their supervisory style to match the evolving task maturity and competence of subordinates practices:", "o": ["Fixed administrative management", "Bureaucratic accounting control", "Autocratic centralized governance", "Situational leadership"], "a": 3},
+{"ch": 6, "q": "A trained moderator guiding a small, structured group interview to gather qualitative feedback about a new product concept is utilizing a:", "o": ["Focus group", "Formal financial benchmarking audit", "Hierarchical mind mapping seminar", "Strict bookkeeping reconciliation review"], "a": 0},
+{"ch": 6, "q": "The landmark Nigerian Supreme Court legal litigation concerning arbitrary bank charges frequently referenced in business finance compliance is:", "o": ["Standard corporate tax compliance arbitration", "Innoson Nigeria Limited vs. Guaranty Trust Bank Plc", "Mandatory warehouse inventory bankruptcy liquidation", "Inter-state commercial shipping contract disputes"], "a": 1},
+{"ch": 6, "q": "What is widely recognized in corporate governance literature as one of the most critical structural challenges unique to family businesses?", "o": ["Preventing any form of long-term operational growth", "Eliminating all formal banking and accounting records", "Succession planning and balancing family emotional dynamics with professional management", "Avoiding all forms of customer service interaction"], "a": 2},
+{"ch": 6, "q": "In human resource management, job analysis is primarily undertaken to determine:", "o": ["The precise tasks, duties, responsibilities, and worker specifications required for a specific position", "The commercial bank interest rate applicable to short-term overdraft facilities", "The retail pricing strategy and distribution channels for new product lines", "The statutory corporate tax deductions required by the federal government"], "a": 0},
+{"ch": 6, "q": "What strategic feature fundamentally differentiates a diversified 'business family' from a standard 'family business'?", "o": ["A business family operates exclusively through a single local retail outlet", "A business family involves all extended relatives in manual shop floor labor", "A business family owns multiple distinct business ventures, focusing on portfolio diversification and wealth preservation", "A business family strictly excludes all professional external managers from leadership"], "a": 2},
+{"ch": 6, "q": "Human resource management planning is primarily concerned with determining an organization's:", "o": ["Commercial bank lending rates and credit terms", "Future manpower and personnel competency requirements", "Product packaging color aesthetics and brand identity", "Customer discount structures and credit limits"], "a": 1},
+{"ch": 6, "q": "Which specific leadership style concentrates absolute decision-making power and operational control exclusively in the leader without subordinate participation?", "o": ["Autocratic leadership", "Laissez-faire delegation", "Participative governance", "Democratic administration"], "a": 0},
+{"ch": 6, "q": "The foundational management function that involves establishing long-term organizational goals and mapping out the systematic course of action to achieve them is:", "o": ["Controlling operational variances", "Staffing personnel roles", "Planning", "Liquidating assets"], "a": 2},
+{"ch": 9, "q": "The marketing concept differs fundamentally from the production concept because it focuses primarily on:", "o": ["Maximizing factory output efficiency to reduce unit production costs", "Identifying and satisfying target customer needs more effectively than competitors", "Aggressive personal selling and heavy promotional advertising pushes", "Internal accounting cost controls and ledger minimization"], "a": 1},
+{"ch": 7, "q": "Distributive negotiation is most commonly characterized by which type of structural outcome?", "o": ["Win-lose competitive bargaining where one party's economic gain constitutes another's direct loss", "Joint value expansion through open cross-licensing", "Total absence of any underlying conflict of interest", "Collaborative long-term partnership integration"], "a": 0},
+{"ch": 7, "q": "In strategic negotiations, what does the core acronym BATNA represent?", "o": ["Best Asset Target Net Analysis", "Business Agreement Trade Negotiation Act", "Buyer and Trade Network Agreement", "Best Alternative to a Negotiated Agreement"], "a": 3},
+{"ch": 7, "q": "Business communication is formally defined in organizational theory as:", "o": ["The process of transmitting information and sharing meaning using symbols to conduct commercial dealings", "Casual social interactions between acquaintances in a lounge", "Automated internal computer data storage routines", "Non-verbal artistic stage performances only"], "a": 0},
+{"ch": 8, "q": "Financial capital resources secured from external funding providers outside an enterprise are categorized as:", "o": ["Internal retained equity reserves", "Personal owner drawings", "External finance", "Undistributed operational profit"], "a": 2},
+{"ch": 8, "q": "Capital financing obtained for a duration exceeding one (1) year but typically not exceeding three (3) to five (5) years is officially classified as:", "o": ["Medium-term finance", "Short-term daily overdraft facility", "Immediate overnight cash advance", "Perpetual equity funding"], "a": 0},
+{"ch": 8, "q": "Which informal community-based financing arrangement involves group members contributing regular financial amounts to a common pool to disburse rotating loans to participants?", "o": ["Institutional venture capital equity", "Thrift society / cooperative pool (Esusu)", "Public ordinary stock issuance", "Commercial bank debt factoring"], "a": 1},
+{"ch": 8, "q": "Capital generated internally from normal business operations that is reinvested rather than distributed to owners as dividends is known as:", "o": ["Venture capital equity", "Short-term trade credit", "External bank borrowing", "Retained earnings"], "a": 3},
+{"ch": 9, "q": "An enterprise that initiates its marketing strategy by investigating, understanding, and satisfying target customer requirements is practicing the:", "o": ["Marketing concept", "Traditional accounting concept", "Production-only focus", "Inventory-push orientation"], "a": 0},
+{"ch": 9, "q": "Which of the following is a recognized and critical component of the electronic commerce 5Cs framework?", "o": ["Physical construction", "Collaboration", "Manual calculation", "Mass consumption"], "a": 1},
+{"ch": 9, "q": "Which of the following operational elements is NOT part of the traditional customer-facing marketing mix (4Ps)?", "o": ["Product design", "Price determination", "Payroll management", "Place distribution"], "a": 2},
+{"ch": 10, "q": "Which modern technological infrastructure connects physical devices, embedded sensors, and software platforms to collect and exchange real-time data over networks?", "o": ["Internet of Things (IoT)", "Virtual Reality simulation", "Standard word processing software", "Traditional print media advertising"], "a": 0},
+{"ch": 10, "q": "When an artificial intelligence system generates systematically skewed or unfair commercial outcomes due to unrepresentative training data, it is suffering from:", "o": ["Virtual reality network lag", "E-commerce database server downtime", "Predictive equipment mechanical failure", "AI algorithmic bias"], "a": 3},
+{"ch": 10, "q": "Which advanced technology creates an immersive, computer-generated simulated 3D environment rather than simply overlaying digital data onto the physical world?", "o": ["Electronic mail routing systems", "Relational database analytics", "Virtual Reality (VR)", "Augmented Reality (AR)"], "a": 2},
+{"ch": 5, "q": "A conceptual business idea successfully matures into a viable commercial opportunity when it is fundamentally backed by:", "o": ["Preliminary brainstorming notes without formalized financial projections", "Unverified technical assumptions and speculative management optimism", "Real market demand and strong economic value creation potential", "Internal executive preferences independent of consumer feedback"], "a": 2}
+];
+
+let current=0,answers=Array(questions.length).fill(null),submitted=false,seconds=1500,timerId=null;
+
+function login(){
+    let m=document.getElementById('mat').value.trim(),p=document.getElementById('pw').value;
+    if(!m||!p){document.getElementById('loginMsg').textContent='Enter both credentials.';return}
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('instructions').classList.remove('hidden');
+    document.getElementById('candidate').textContent=m;
+}
+
+function startExam(){
+    document.getElementById('instructions').classList.add('hidden');
+    document.getElementById('exam').classList.remove('hidden');
+    renderGrid();
+    renderQuestion();
+    timerId=setInterval(()=>{
+        seconds--;
+        let m=Math.floor(seconds/60),s=seconds%60;
+        document.getElementById('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+        if(seconds<=300)document.getElementById('timer').classList.add('warn');
+        if(seconds<=0){clearInterval(timerId);submitExam(true)}
+    },1000);
+}
+
+function renderQuestion(){
+    let x=questions[current],h='<div class="qhead">Question '+(current+1)+' of '+questions.length+'<br><br>'+x.q+'</div>';
+    x.o.forEach((v,i)=>h+='<label class="option"><input type="radio" name="ans" '+(answers[current]===i?'checked':'')+' onchange="choose('+i+')">'+String.fromCharCode(65+i)+'. '+v+'</label>');
+    document.getElementById('question').innerHTML=h;
+    document.querySelectorAll('#grid button').forEach((b,i)=>b.classList.toggle('done',answers[i]!==null));
+}
+
+function choose(i){
+    answers[current]=i;
+    renderQuestion();
+}
+
+function nextQ(){
+    if(current<49){current++;renderQuestion();scrollTo(0,0)}
+}
+
+function prevQ(){
+    if(current>0){current--;renderQuestion();scrollTo(0,0)}
+}
+
+function renderGrid(){
+    document.getElementById('grid').innerHTML=questions.map((_,i)=>'<button onclick="jump('+i+')">'+(i+1)+'</button>').join('');
+}
+
+function jump(i){
+    current=i;
+    renderQuestion();
+    scrollTo(0,0);
+}
+
+function submitExam(auto){
+    if(submitted)return;
+    if(!auto&&!confirm('Submit your examination now?'))return;
+    submitted=true;
+    clearInterval(timerId);
+    let score=0;
+    questions.forEach((x,i)=>{if(answers[i]===x.a)score++});
+    document.getElementById('exam').classList.add('hidden');
+    document.getElementById('result').classList.remove('hidden');
+    document.getElementById('score').textContent=score+' / '+questions.length;
+    document.getElementById('stats').textContent='Attempted: '+answers.filter(x=>x!==null).length+' | Unanswered: '+answers.filter(x=>x===null).length+' | '+(auto?'Time expired — auto-submitted.':'Submitted successfully.');
+    document.getElementById('review').innerHTML='<h3>REVIEW</h3>'+questions.map((x,i)=>'<div class="review-item"><b>'+(i+1)+'. '+x.q+'</b><br>Your answer: <span class="'+(answers[i]===x.a?'correct':'wrong')+'">'+(answers[i]===null?'Not answered':x.o[answers[i]])+'</span><br>Correct answer: <span class="correct">'+x.o[x.a]+'</span></div>').join('');
+    scrollTo(0,0);
+}
+</script>
+</body>
+</html>
